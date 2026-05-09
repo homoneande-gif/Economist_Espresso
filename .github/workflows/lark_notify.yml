@@ -1,0 +1,35 @@
+name: Lark Notification
+on:
+  push:
+    paths:
+      - 'The_World_in_Brief.pdf' # 只有当这个 PDF 文件变动时才发通知
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Lark Message
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{
+                "msg_type": "post",
+                "content": {
+                  "post": {
+                    "zh_cn": {
+                      "title": "☕️ 经济学人简报已更新",
+                      "content": [
+                        [{
+                          "tag": "text",
+                          "text": "最新的 The World in Brief PDF 已经同步到你的仓库。"
+                        }],
+                        [{
+                          "tag": "a",
+                          "text": "点击立即阅读",
+                          "href": "https://github.com{{ github.repository }}/blob/main/The_World_in_Brief.pdf"
+                        }]
+                      ]
+                    }
+                  }
+                }
+              }' \
+          ${{ secrets.LARK_WEBHOOK }}
